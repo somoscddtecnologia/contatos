@@ -2,3 +2,7 @@ PORT={porta-da-aplicação}
 MONGODB_URL={url-do-mongo-db-com-porta}
 BASIC_USER={login-de-acesso}
 BASIC_PASS={senha-de-acesso}
+
+API_KEY={api-key}
+
+JWT_SECRET={jwt-secret}

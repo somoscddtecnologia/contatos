@@ -20,8 +20,38 @@ router.post('/login', async (req, res) => {
         return res.status(401).json('Senha inválida')
     }
 
-    console.log('logado!!!')
+    const token = jwt.sign(
+        { id: dado._id, email: dado.email },
+        process.env.JWT_SECRET,
+        {
+            expiresIn: '1h'
+        })
 
+        res.json(token)
+
+})
+
+router.post('/register', async (req, res) => {
+    //receber email e senha
+    const { email, senha } = req.body
+
+    //verificar se email não existe no banco
+    const usuarioExiste = await Usuario.findOne({ email })
+    if (usuarioExiste) {
+        return res.status(400).json('Email já cadastrado')
+    }
+
+    //criptografar a senha
+    const senhaCriptografada = await bcrypt.hash(senha, 10)
+
+    console.log(senhaCriptografada)
+
+    //salvar dados no banco
+    const novoUsuario = new Usuario({ email, senha: senhaCriptografada })
+    await novoUsuario.save()
+
+    //apresentar resultado
+    res.status(201).json('Usuário cadastrado com sucesso')
 })
 
 module.exports = router
