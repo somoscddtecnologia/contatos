@@ -15,6 +15,10 @@ router.post('/login', async (req, res) => {
 
     //const senhaCriptografada = await bcrypt.hash(senha, 10)
 
+    if (!senha) {
+        return res.status(401).json('Senha não enviada')
+    }
+
     const senhaValida = await bcrypt.compare(senha, dado.senha)
     if (!senhaValida) {
         return res.status(401).json('Senha inválida')
