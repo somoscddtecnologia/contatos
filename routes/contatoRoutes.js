@@ -8,6 +8,27 @@ const apiKeyAuth = require('../middlewares/apiKeyAuth')
 const bearerToken = require('../middlewares/bearerToken')
 
 // Listar contatos
+/**
+ * @swagger
+ * /:
+ *  get:
+ *      sumary: Listar todos os contados da api
+ *      tags: [Contatos]
+ *      responses:
+ *          200:
+ *              description: Lista de contatos
+ *              content:
+ *                  application/json:
+ *                      schema:
+ *                          type: array
+ *                          items:
+ *                              type: object
+ *                              properties:
+ *                                  nome:
+ *                                      type: string
+ *                                  telephone:
+ *                                      type: string
+ */
 router.get('/', basicAuth, async (req, res) => {
     const dados = await Contatos.find();
 
@@ -21,6 +42,36 @@ router.get('/', basicAuth, async (req, res) => {
 })
 
 //Buscar por ID
+/**
+ * @swagger
+ * /{id}:
+ *  get:
+ *      sumary: Buscar um contato por ID
+ *      tags: [Contatos]
+ *      parameters:
+ *        - in: path
+ *          name: id
+ *          required: true
+ *          description: ID do contato
+ *          schema:
+ *              type: string
+ *      responses:
+ *          200:
+ *              description: Contato encontrado com sucesso
+ *              content:
+ *                  application/json:
+ *                      schema:
+ *                          type: array
+ *                          items:
+ *                              type: object
+ *                              properties:
+ *                                  nome:
+ *                                      type: string
+ *                                  telephone:
+ *                                      type: string
+ *          404:
+ *              description: Contato não encontrado
+ */
 router.get('/:id', apiKeyAuth, async (req, res) => {
     try {
         if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
