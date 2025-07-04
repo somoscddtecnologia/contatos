@@ -22,23 +22,17 @@ const bearerToken = require('../middlewares/bearerToken')
  *                      schema:
  *                          type: array
  *                          items:
- *                              type: object
- *                              properties:
- *                                  nome:
- *                                      type: string
- *                                  telephone:
- *                                      type: string
+ *                              $ref: '#/components/schemas/Contato'
+ *          404:
+ *              description: Contato não encontrado
+ *                      
  */
-router.get('/', basicAuth, async (req, res) => {
+router.get('/', async (req, res) => {
     const dados = await Contatos.find();
 
-    const retorno = {
-        "alert": dados.length == 0 ? 'warning' : 'success',
-        "message": "Dados listados com sucesso.",
-        "data": dados
-    }
+    const [status, retorno] = montaRetorno(dados, "Dados listados com sucesso.")
 
-    res.json(retorno)
+    res.status(status).json(retorno)
 })
 
 //Buscar por ID
@@ -61,27 +55,24 @@ router.get('/', basicAuth, async (req, res) => {
  *              content:
  *                  application/json:
  *                      schema:
- *                          type: array
- *                          items:
- *                              type: object
- *                              properties:
- *                                  nome:
- *                                      type: string
- *                                  telephone:
- *                                      type: string
+ *                          $ref: '#/components/schemas/Contato'  
  *          404:
  *              description: Contato não encontrado
  */
-router.get('/:id', apiKeyAuth, async (req, res) => {
+router.get('/:id', async (req, res) => {
     try {
         if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
-            return res.status(404).json({ "error": "Id enviado não é válido" })
+            const [status, retorno] = montaRetorno(null, "Id enviado não é válido.")
+            return res.status(status).json(retorno)
         }
         const dado = await Contatos.findById(req.params.id);
         if (!dado) {
-            return res.status(404).json({ error: "erro, não achamos o id" })
+            const [status, retorno] = montaRetorno(null, "erro, não achamos o id.")
+            return res.status(status).json(retorno)
         }
-        res.status(200).json(dado)
+
+        const [status, retorno] = montaRetorno(dado, "Contato consultado com sucesso.")
+        res.status(status).json(retorno)
     }
     catch (err) {
         res.status(404).json({ "error": err.message })
@@ -89,13 +80,13 @@ router.get('/:id', apiKeyAuth, async (req, res) => {
 })
 
 // Criar contato
-router.post('/', bearerToken, async (req, res) => {
+router.post('/', async (req, res) => {
     const dados = await Contatos.create(req.body);
     res.status(200).json(dados)
 })
 
 //Atualizar por ID
-router.put('/:id', basicAuth, async (req, res) => {
+router.put('/:id', async (req, res) => {
     try {
         const dado = await Contatos.findByIdAndUpdate(req.params.id, req.body, { new: true })
         if (!dado) {
@@ -109,7 +100,7 @@ router.put('/:id', basicAuth, async (req, res) => {
 })
 
 //deletar por ID
-router.delete('/:id', basicAuth, async (req, res) => {
+router.delete('/:id', async (req, res) => {
     try {
         const dado = await Contatos.findByIdAndDelete(req.params.id)
         if (!dado) {
@@ -121,5 +112,27 @@ router.delete('/:id', basicAuth, async (req, res) => {
         res.status(404).json({ "error": err.message })
     }
 })
+
+
+function montaRetorno(dados, menssagem) {
+
+    let alert
+    let status = 200
+    if (!dados) {
+        alert = 'fail'
+        status = 404
+    } else {
+        alert = dados.length == 0 ? 'warning' : 'success'
+    }
+
+    return [
+        status,
+        {
+            "alert": alert,
+            "message": menssagem,
+            "data": dados
+        }
+    ];
+}
 
 module.exports = router
