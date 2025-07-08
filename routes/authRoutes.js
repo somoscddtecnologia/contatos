@@ -11,6 +11,12 @@ const montaRetorno = require('../middlewares/montaRetorno')
  *  post:
  *      sumary: Logar na aplicação
  *      tags: [Login]
+ *      requestBody:
+ *          required: true
+ *          content:
+ *              application/json:
+ *                  schema:
+ *                      $ref: "#/components/schemas/UsuarioLogin"
  *      responses:
  *          200:
  *              description: Logado com sucesso

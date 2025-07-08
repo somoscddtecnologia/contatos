@@ -40,6 +40,19 @@ const options = {
                             example: 'chenrique@fiemg.com.br'
                         },
                     }
+                },
+                UsuarioLogin: {
+                    type: 'object',
+                    properties: {
+                        login: {
+                            type: 'string',
+                            example: 'Carlos Henrique'
+                        },
+                        senha:{
+                            type: 'string',
+                            example: '32988679783'
+                        }
+                    }
                 }
             }
         }
