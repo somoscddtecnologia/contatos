@@ -3,7 +3,25 @@ const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const Usuario = require('../models/Usuario')
 const router = express.Router()
+const montaRetorno = require('../middlewares/montaRetorno')
 
+/**
+ * @swagger
+ * /auth/login:
+ *  post:
+ *      sumary: Logar na aplicação
+ *      tags: [Login]
+ *      responses:
+ *          200:
+ *              description: Logado com sucesso
+ *              content:
+ *                  application/json:
+ *                      schema:
+ *                          type: string
+ *          404:
+ *              description: Login não encontrado
+ *                      
+ */
 router.post('/login', async (req, res) => {
     const { email, senha } = req.body
 
@@ -31,7 +49,8 @@ router.post('/login', async (req, res) => {
             expiresIn: '1h'
         })
 
-        res.json(token)
+    const [status, retorno] = montaRetorno({ jwt: token }, "Login efetuado com sucesso.")
+    res.status(status).json(retorno)
 
 })
 
