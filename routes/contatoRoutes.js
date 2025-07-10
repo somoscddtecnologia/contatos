@@ -7,6 +7,9 @@ const basicAuth = require('../middlewares/basicAuth')
 const apiKeyAuth = require('../middlewares/apiKeyAuth')
 const bearerToken = require('../middlewares/bearerToken')
 
+const viaCep = require('../middlewares/viaCep')
+
+
 // Listar contatos
 /**
  * @swagger
@@ -80,14 +83,49 @@ router.get('/:id', async (req, res) => {
 })
 
 // Criar contato
-router.post('/', async (req, res) => {
+/**
+ * @swagger
+ * /:
+ *  post:
+ *      sumary: Salvar Contato
+ *      tags: [Contatos]
+ *      requestBody:
+ *          required: true
+ *          content:
+ *              application/json:
+ *                  schema:
+ *                      $ref: "#/components/schemas/ContatoSalvar"
+ *      responses:
+ *          200:
+ *              description: Contato Salvo com sucesso
+ *              content:
+ *                  application/json:
+ *                      schema:
+ *                          type: string          
+ */
+router.post('/', viaCep, async (req, res) => {
     const dados = await Contatos.create(req.body);
     res.status(200).json(dados)
 })
 
 //Atualizar por ID
-router.put('/:id', async (req, res) => {
+router.put('/:id', viaCep, async (req, res) => {
     try {
+
+        if (req.cep) {
+            const { numero, complemento } = req.body
+
+            if (numero === undefined) {
+                return res.status(404).json({ error: 'Número não enviado' })
+            }
+
+            if (complemento === undefined) {
+                return res.status(404).json({ error: 'Complemento não enviado' })
+            }
+        }
+
+
+
         const dado = await Contatos.findByIdAndUpdate(req.params.id, req.body, { new: true })
         if (!dado) {
             return res.status(404).json({ error: 'Contato não encontrado' })

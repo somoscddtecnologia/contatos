@@ -5,7 +5,8 @@ async function viaCep(req, res, next) {
 
   // Verifica se o CEP foi informado
   if (!cep) {
-    return res.status(404).json({ erro: 'CEP não enviado' });
+    next()
+    //return res.status(404).json({ erro: 'CEP não enviado' });
   }
 
   try {

@@ -20,6 +20,35 @@ const options = {
         ],
         components: {
             schemas: {
+                ContatoSalvar: {
+                    type: 'object',
+                    properties: {
+                        nome: {
+                            type: 'string',
+                            example: 'Carlos Henrique'
+                        },
+                        telefone: {
+                            type: 'string',
+                            example: '32988679783'
+                        },
+                        email: {
+                            type: 'string',
+                            example: 'chenrique@fiemg.com.br'
+                        },
+                        cep: {
+                            type: 'string',
+                            example: 'chenrique@fiemg.com.br'
+                        },
+                        numero: {
+                            type: 'string',
+                            example: '111'
+                        },
+                        complemento: {
+                            type: 'string',
+                            example: 'CASA'
+                        },
+                    }
+                },
                 Contato: {
                     type: 'object',
                     properties: {
@@ -31,13 +60,29 @@ const options = {
                             type: 'string',
                             example: 'Carlos Henrique'
                         },
-                        telefone:{
+                        telefone: {
                             type: 'string',
                             example: '32988679783'
                         },
                         email: {
                             type: 'string',
                             example: 'chenrique@fiemg.com.br'
+                        },
+                        cep: {
+                            type: 'string',
+                            example: 'chenrique@fiemg.com.br'
+                        },
+                        logradouro: {
+                            type: 'string',
+                            example: 'Rua das flores'
+                        },
+                        numero: {
+                            type: 'string',
+                            example: '111'
+                        },
+                        complemento: {
+                            type: 'string',
+                            example: 'CASA'
                         },
                     }
                 },
@@ -48,7 +93,7 @@ const options = {
                             type: 'string',
                             example: 'Carlos Henrique'
                         },
-                        senha:{
+                        senha: {
                             type: 'string',
                             example: '32988679783'
                         }
