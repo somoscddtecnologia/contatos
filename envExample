@@ -1,8 +1,15 @@
+# Porta da aplicação
 PORT={porta-da-aplicação}
+
+# Endereço do banco de dados
 MONGODB_URL={url-do-mongo-db-com-porta}
+
+# credenciais base em BASIC
 BASIC_USER={login-de-acesso}
 BASIC_PASS={senha-de-acesso}
 
+# credenciais base em API KEY
 API_KEY={api-key}
 
+# Chave segurança para JWT
 JWT_SECRET={jwt-secret}
