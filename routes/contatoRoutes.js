@@ -1,6 +1,10 @@
 const express = require("express")
 const router = express.Router()
+
 const Contatos = require('../models/Contato');
+
+const montaRetorno = require("../utils/montaRetorno")
+
 const { default: mongoose } = require("mongoose");
 
 const basicAuth = require('../middlewares/basicAuth')
@@ -9,13 +13,12 @@ const bearerToken = require('../middlewares/bearerToken')
 
 const viaCep = require('../middlewares/viaCep')
 
-
 // Listar contatos
 /**
  * @swagger
  * /:
  *  get:
- *      sumary: Listar todos os contados da api
+ *      summary: Listar todos os contados da api
  *      tags: [Contatos]
  *      responses:
  *          200:
@@ -31,7 +34,12 @@ const viaCep = require('../middlewares/viaCep')
  *                      
  */
 router.get('/', async (req, res) => {
-    const dados = await Contatos.find();
+    let dados
+    if (req.query.nome) {
+        dados = await Contatos.find({ nome: req.query.nome });
+    } else {
+        dados = await Contatos.find();
+    }
 
     const [status, retorno] = montaRetorno(dados, "Dados listados com sucesso.")
 
@@ -43,7 +51,7 @@ router.get('/', async (req, res) => {
  * @swagger
  * /{id}:
  *  get:
- *      sumary: Buscar um contato por ID
+ *      summary: Buscar um contato por ID
  *      tags: [Contatos]
  *      parameters:
  *        - in: path
@@ -78,7 +86,8 @@ router.get('/:id', async (req, res) => {
         res.status(status).json(retorno)
     }
     catch (err) {
-        res.status(404).json({ "error": err.message })
+        const [status, retorno] = montaRetorno(null, err.message)
+        res.status(status).json(retorno)
     }
 })
 
@@ -87,7 +96,7 @@ router.get('/:id', async (req, res) => {
  * @swagger
  * /:
  *  post:
- *      sumary: Salvar Contato
+ *      summary: Salvar Contato
  *      tags: [Contatos]
  *      requestBody:
  *          required: true
@@ -109,6 +118,35 @@ router.post('/', viaCep, async (req, res) => {
 })
 
 //Atualizar por ID
+/**
+ * @swagger
+ * /{id}:
+ *  put:
+ *      summary: Atualizar scontato por ID
+ *      tags: [Contatos]
+ *      parameters:
+ *        - in: path
+ *          name: id
+ *          required: true
+ *          description: ID do contato
+ *          schema:
+ *              type: string
+ *      requestBody:
+ *          required: true
+ *          content:
+ *              application/json:
+ *                  schema:
+ *                      $ref: "#/components/schemas/ContatoSalvar"
+ *      responses:
+ *          200:
+ *              description: Contato atualizado com sucesso
+ *              content:
+ *                  application/json:
+ *                      schema:
+ *                          $ref: '#/components/schemas/Contato'  
+ *          404:
+ *              description: Contato não encontrado
+ */
 router.put('/:id', viaCep, async (req, res) => {
     try {
 
@@ -151,26 +189,5 @@ router.delete('/:id', async (req, res) => {
     }
 })
 
-
-function montaRetorno(dados, menssagem) {
-
-    let alert
-    let status = 200
-    if (!dados) {
-        alert = 'fail'
-        status = 404
-    } else {
-        alert = dados.length == 0 ? 'warning' : 'success'
-    }
-
-    return [
-        status,
-        {
-            "alert": alert,
-            "message": menssagem,
-            "data": dados
-        }
-    ];
-}
 
 module.exports = router

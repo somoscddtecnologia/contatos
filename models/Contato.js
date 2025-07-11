@@ -5,7 +5,8 @@ const ContatoSchema = new mongoose.Schema(
         nome: { type: String, required: true },
         email: { type: String, required: true },
         telefone: { type: String, required: true },
-        cep: { type: String, required: true },
+
+        cep: { type: String, resquired: true },
         logradouro: { type: String, required: true },
         bairro: { type: String, required: true },
         localidade: { type: String, required: true },

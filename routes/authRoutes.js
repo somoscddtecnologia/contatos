@@ -3,7 +3,7 @@ const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const Usuario = require('../models/Usuario')
 const router = express.Router()
-const montaRetorno = require('../middlewares/montaRetorno')
+const montaRetorno = require('../utils/montaRetorno')
 
 /**
  * @swagger
@@ -34,18 +34,21 @@ router.post('/login', async (req, res) => {
     const dado = await Usuario.findOne({ email })
 
     if (!dado) {
-        return res.status(401).json('Email inválido')
+        const [status, retorno] = montaRetorno(null, 'Email inválido')
+        return res.status(status).json(retorno)
     }
 
     //const senhaCriptografada = await bcrypt.hash(senha, 10)
 
     if (!senha) {
-        return res.status(401).json('Senha não enviada')
+        const [status, retorno] = montaRetorno(null, 'Senha não enviada')
+        return res.status(status).json(retorno)
     }
 
     const senhaValida = await bcrypt.compare(senha, dado.senha)
     if (!senhaValida) {
-        return res.status(401).json('Senha inválida')
+        const [status, retorno] = montaRetorno(null, 'Senha inválida')
+        return res.status(status).json(retorno)
     }
 
     const token = jwt.sign(
@@ -67,20 +70,22 @@ router.post('/register', async (req, res) => {
     //verificar se email não existe no banco
     const usuarioExiste = await Usuario.findOne({ email })
     if (usuarioExiste) {
-        return res.status(400).json('Email já cadastrado')
+        const [status, retorno] = montaRetorno(null, 'Email já cadastrado')
+        return res.status(status).json(retorno)
     }
 
     //criptografar a senha
     const senhaCriptografada = await bcrypt.hash(senha, 10)
 
-    console.log(senhaCriptografada)
+    //console.log(senhaCriptografada)
 
     //salvar dados no banco
     const novoUsuario = new Usuario({ email, senha: senhaCriptografada })
     await novoUsuario.save()
 
     //apresentar resultado
-    res.status(201).json('Usuário cadastrado com sucesso')
+    const [status, retorno] = montaRetorno(novoUsuario, 'Usuário cadastrado com sucesso')
+    return res.status(status).json(retorno)
 })
 
 module.exports = router
